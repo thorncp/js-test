@@ -111,7 +111,7 @@ function Clock(options) {
     self.ctx.save();
     self.ctx.rotate(Math.PI);
     self.ctx.strokeStyle = "#000";
-    self.ctx.rotate(6 * Math.PI / 180 * (time.getSeconds() - 1 + time.getMilliseconds() / 1000));
+    self.ctx.rotate(6 * Math.PI / 180 * (time.getSeconds() + time.getMilliseconds() / 1000));
     self.ctx.beginPath();
     self.ctx.lineWidth = 2;
     self.ctx.moveTo(0, 0);
