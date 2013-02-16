@@ -8,5 +8,33 @@
   <body>
     <canvas id="canvas" width="600" height="600" style="border: 1px solid #000; width: 300px; height: 300px">
     </canvas>
+
+    <script>
+      window.onload = function() {
+        var canvas = document.getElementById("canvas");
+
+        var clock = new Clock({
+          ctx: canvas.getContext("2d"),
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          size: 50
+        });
+
+        var clockDelta = 1;
+
+        function draw() {
+          canvas.width = canvas.width;
+
+          if (clock.size() > 250 || clock.size() < 50) {
+            clockDelta *= -1;
+          }
+
+          clock.setSize(clock.size() + clockDelta);
+          clock.draw();
+        }
+
+        setInterval(draw, 33);
+      };
+    </script>
   </body>
 </html>

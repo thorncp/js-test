@@ -1,22 +1,28 @@
 function Clock(options) {
+  var defaultOptions = {
+    x: 0,
+    y: 0,
+    size: 280,
+    tickWidth: 8
+  }
+
   if (typeof options === "undefined") {
     options = {}
   }
 
-  if (typeof options.x === 'undefined') options.x = 0;
-  if (typeof options.y === 'undefined') options.y = 0;
-  if (typeof options.outlineWidth === 'undefined') options.outlineWidth = 12;
-  if (typeof options.tickWidth === 'undefined') options.tickWidth = 8;
+  for (key in options) {
+    defaultOptions[key] = options[key];
+  }
+
+  options = defaultOptions;
 
   this.options = options;
-  this.canvas = options.canvas;
-  this.ctx = this.canvas.getContext("2d");
+  this.ctx = this.options.ctx;
 
   var self = this;
 
   var module = {
     draw: function() {
-      canvas.width = canvas.width;
       self.ctx.save();
       self.ctx.translate(self.options.x, self.options.y);
 
@@ -24,36 +30,58 @@ function Clock(options) {
       drawTicks();
       drawHands();
       self.ctx.restore();
+    },
+
+    setSize: function(size) {
+      self.options.size = size;
+      return this;
+    },
+
+    size: function(size) {
+      return self.options.size;
     }
   };
 
   function drawOutline() {
+    var outlineWidth = self.options.size * 0.04;
+
     self.ctx.beginPath();
-    self.ctx.lineWidth = self.options.outlineWidth;
-    self.ctx.arc(0, 0, 280, 0, Math.PI * 2, true);
+    self.ctx.lineWidth = outlineWidth;
+    self.ctx.arc(0, 0, self.options.size, 0, Math.PI * 2, true);
     self.ctx.stroke();
   }
 
   function drawTicks() {
     self.ctx.lineWidth = self.options.tickWidth;
 
+    var bigTickWidth = self.options.size * 0.03;
+    var smallTickWidth = self.options.size * 0.01;
+
+    var smallTickSize = self.options.size * 0.04;
+    var smallTickStart = self.options.size * 0.9;
+    var smallTickStop = smallTickStart - smallTickSize;
+
     for (var i = 0; i < 60; i++) {
       self.ctx.rotate(6 * Math.PI / 180);
       self.ctx.lineCap = "round";
-      self.ctx.lineWidth = 2;
+      self.ctx.lineWidth = smallTickWidth;
       self.ctx.beginPath();
-      self.ctx.moveTo(0, 240);
-      self.ctx.lineTo(0, 250);
+      self.ctx.moveTo(0, smallTickStart);
+      self.ctx.lineTo(0, smallTickStop);
       self.ctx.stroke();
     }
+
+    var bigTickSize = self.options.size * 0.16;
+    var bigTickStart = self.options.size * 0.9;
+    var bigTickStop = bigTickStart - bigTickSize;
 
     for (var i = 0; i < 12; i++) {
       self.ctx.rotate(30 * Math.PI / 180);
       self.ctx.beginPath();
-      self.ctx.lineWidth = 8;
+      self.ctx.lineWidth = bigTickWidth;
       self.ctx.lineCap = "round";
-      self.ctx.moveTo(0, 200);
-      self.ctx.lineTo(0, 250);
+      self.ctx.moveTo(0, bigTickStart);
+      self.ctx.lineTo(0, bigTickStop);
       self.ctx.stroke();
     }
   }
@@ -67,10 +95,10 @@ function Clock(options) {
     drawHourHand(now);
     drawSecondHand(now);
 
+    var handDotSize = self.options.size * 0.04;
     self.ctx.beginPath();
-    self.ctx.arc(0, 0, 12, 0, Math.PI * 2, true);
+    self.ctx.arc(0, 0, handDotSize, 0, Math.PI * 2, true);
     self.ctx.fill();
-
   }
 
   function drawHourHand(time) {
@@ -78,60 +106,57 @@ function Clock(options) {
     self.ctx.rotate(Math.PI);
     self.ctx.rotate(30 * Math.PI / 180 * (time.getHours() + time.getMinutes() / 60));
 
+    var hourHandWidth = self.options.size * 0.03;
+    var hourHandLength = self.options.size * 0.6;
+    var hourHandFillWidth = hourHandWidth * 0.25;
+
     self.ctx.beginPath();
     self.ctx.strokeStyle = "#f00";
-    self.ctx.lineWidth = 6;
+    self.ctx.lineWidth = hourHandWidth;
     self.ctx.moveTo(0, 0);
-    self.ctx.lineTo(0, 175);
+    self.ctx.lineTo(0, hourHandLength);
     self.ctx.stroke();
 
     self.ctx.beginPath();
     self.ctx.strokeStyle = "#fff";
-    self.ctx.lineWidth = 2;
+    self.ctx.lineWidth = hourHandFillWidth;
     self.ctx.moveTo(0, 0);
-    self.ctx.lineTo(0, 175);
+    self.ctx.lineTo(0, hourHandLength);
     self.ctx.stroke();
 
     self.ctx.restore();
   }
 
   function drawMinuteHand(time) {
+    var minuteHandWidth = self.options.size * 0.02;
+    var minuteHandLength = self.options.size * 0.8;
+
     self.ctx.save();
     self.ctx.rotate(Math.PI);
     self.ctx.rotate(6 * Math.PI / 180 * (time.getMinutes() + time.getSeconds() / 60));
     self.ctx.beginPath();
-    self.ctx.lineWidth = 6;
+    self.ctx.lineWidth = minuteHandWidth;
     self.ctx.moveTo(0, 0);
-    self.ctx.lineTo(0, 230);
+    self.ctx.lineTo(0, minuteHandLength);
     self.ctx.stroke();
     self.ctx.restore();
   }
 
   function drawSecondHand(time) {
+    var secondHandWidth = self.options.size * 0.01;
+    var secondHandLength = self.options.size * 0.8;
+
     self.ctx.save();
     self.ctx.rotate(Math.PI);
     self.ctx.strokeStyle = "#000";
     self.ctx.rotate(6 * Math.PI / 180 * (time.getSeconds() + time.getMilliseconds() / 1000));
     self.ctx.beginPath();
-    self.ctx.lineWidth = 2;
+    self.ctx.lineWidth = secondHandWidth;
     self.ctx.moveTo(0, 0);
-    self.ctx.lineTo(0, 250);
+    self.ctx.lineTo(0, secondHandLength);
     self.ctx.stroke();
     self.ctx.restore();
   }
 
   return module;
 }
-
-window.onload = function() {
-  var canvas = document.getElementById("canvas");
-
-  var clock = new Clock({
-    canvas: canvas,
-    x: canvas.width / 2,
-    y: canvas.height / 2
-  });
-
-  clock.draw();
-  setInterval(clock.draw, 33);
-};
