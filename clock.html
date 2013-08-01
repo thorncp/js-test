@@ -17,19 +17,11 @@
           ctx: canvas.getContext("2d"),
           x: canvas.width / 2,
           y: canvas.height / 2,
-          size: 50
+          size: 250
         });
-
-        var clockDelta = 1;
 
         function draw() {
           canvas.width = canvas.width;
-
-          if (clock.size() > 250 || clock.size() < 50) {
-            clockDelta *= -1;
-          }
-
-          clock.setSize(clock.size() + clockDelta);
           clock.draw();
         }
 
